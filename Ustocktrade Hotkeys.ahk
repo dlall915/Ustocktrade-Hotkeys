@@ -9,7 +9,8 @@ SetWorkingDir %A_ScriptDir%  ; Ensures a consistent starting directory.
 ; Buy @ market, buy @ bid.
 ; Sell @ market, sell @ ask.
 
-; Default coords and window name works on a primary 1440p monitor in a Chrome window that is snapped to the left.
+; Default cords and window name works on a primary 1440p monitor in a Chrome window that is snapped to the left.
+; Only works with the most recently added stock, or the one on the leftmost of the window.
 ; Hotkeys can be changed as desired, list is here https://autohotkey.com/docs/KeyList.htm
 
 ; Enter window name and coordinates here.
@@ -27,12 +28,13 @@ yCordSAsk:= "y265"
 xCordConfirmButton:= "x675"
 yCordConfirmButton:= "y465"
 
-increment:= 100 ; Change the increment/decrement value here.
+increment:= 50 ; Change the increment value here.
+decrement: = 50; Change the decrement value here.
 numShares:= 0 ; Don't touch!
 numDigitsToClear:= 5 ; Will clear up to a 99999 share order, didn't see any point in going higher.
 
 ; Increments number of shares by the amount defined for "increment".
-NumpadAdd::
+Ctrl & 6::
 	; Clicks the quantity field.
 	ControlClick, %xCordQuantity% %yCordQuantity%, %windowName%
 	Sleep, 25
@@ -45,17 +47,17 @@ NumpadAdd::
 	Send "%numShares%"
 Return
 
-; Decrements number of shares by the amount defined for "increment".
-NumpadSub::
+; Decrements number of shares by the amount defined for "decrement".
+Ctrl & 3::
 	; Clicks the quantity field.
 	ControlClick, %xCordQuantity% %yCordQuantity%, %windowName%
 	Sleep, 25
 	; Clears quantity field, increments number of shares and enters it.
-	if (numShares = %increment%) {
+	if (numShares = %decrement%) {
 		Return
 	}
 	if (numShares > 0) {
-		numShares-= %increment%
+		numShares-= %decrement%
 	}
 	Loop, %numDigitsToClear%
 	{
@@ -65,7 +67,7 @@ NumpadSub::
 Return
 
 ; Places a buy order at market.
-NumpadEnter::
+Ctrl & 4::
 	; Clicks the buy button.
 	ControlClick, %xCordBuyButton% %yCordBuyButton%, %windowName%
 	; Delay between clicks can possibly be lowered to 226-229, 225 is too fast.
@@ -76,7 +78,7 @@ NumpadEnter::
 Return
 
 ; Places a buy order at bid.
-Numpad3::
+Ctrl & 5::
 	; Clicks the bid, which enters that as the order price.
 	ControlClick, %xCordBid% %yCordBid%, %windowName%
 	; Delay between clicks can possibly be lowered to 226-229, 225 is too fast.
@@ -91,7 +93,7 @@ Numpad3::
 Return
 
 ; Places a sell order at market.
-NumpadDot::
+Ctrl & 1::
 	; Clicks the sell button
 	ControlClick, %xCordSellButton% %yCordSellButtont%, %windowName%
 	; Delay between clicks can possibly be lowered to 226-229, 225 is too fast.
@@ -102,7 +104,7 @@ NumpadDot::
 Return
 
 ; Places a sell order at ask.
-Numpad0::
+Ctrl 2::
 	; Clicks the ask, which enters that as the ask price.
 	ControlClick, %xCordAsk% %yCordAsk%, %windowName%
 	; Delay between clicks can possibly be lowered to 226-229, 225 is too fast.
@@ -121,7 +123,7 @@ Esc::
 	; Clicks the quantity field.
 	ControlClick, %xCordQuantity% %yCordQuantity%, %windowName%
 	Sleep, 25
-	Loop, 10
+	Loop, %numDigitsToClear%
 	{
 		Send {Delete}
 	}
@@ -129,5 +131,4 @@ Esc::
 Return
 
 ; Hit ` to exit this program.
-; Keep in mind hitting ` once just closes one program, so hit it for how many you have open.
 `::ExitApp
