@@ -23,8 +23,8 @@ global xCoordBid:= "x45"
 global yCoordBid:= "y265"
 global xCoordSellButton:= "x250"
 global yCoordSellButton:= "y380"
-global xCoordSAsk:= "x390"
-global yCoordSAsk:= "y265"
+global xCoordAsk:= "x390"
+global yCoordAsk:= "y265"
 global xCoordConfirmButton:= "x675"
 global yCoordConfirmButton:= "y465"
 global numDigitsToClear:= 5 ; Will clear up to a 99999 share order, didn't see any point in going higher.
@@ -108,7 +108,7 @@ clickBuy() {
 }
 
 clickSell() {
-	ControlClick, %xCoordSellButton% %yCoordSellButtont%, %windowName%
+	ControlClick, %xCoordSellButton% %yCoordSellButton%, %windowName%
 }
 
 clickBid() {
