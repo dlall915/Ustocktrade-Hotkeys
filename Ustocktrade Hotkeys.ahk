@@ -15,18 +15,18 @@ SetWorkingDir %A_ScriptDir%  ; Ensures a consistent starting directory.
 
 ; Enter window name and coordinates here.
 global windowName:= "Ustocktrade - Google Chrome"
-global xCoordQuantity:= "x160"
+global xCoordQuantity:= "x120"
 global yCoordQuantity:= "y350"
-global xCoordBuyButton:= "x55"
+global xCoordBuyButton:= "x60"
 global yCoordBuyButton:= "y380"
-global xCoordBid:= "x45"
-global yCoordBid:= "y265"
-global xCoordSellButton:= "x250"
+global xCoordBid:= "x50"
+global yCoordBid:= "y260"
+global xCoordSellButton:= "x260"
 global yCoordSellButton:= "y380"
-global xCoordAsk:= "x390"
-global yCoordAsk:= "y265"
-global xCoordConfirmButton:= "x675"
-global yCoordConfirmButton:= "y465"
+global xCoordAsk:= "x350"
+global yCoordAsk:= "y260"
+global xCoordConfirmButton:= "x700"
+global yCoordConfirmButton:= "y390"
 global numDigitsToClear:= 5 ; Will clear up to a 99999 share order, didn't see any point in going higher.
 global shareCounter:= 0 ; Don't touch!
 increment:= 50 ; Change the increment value here.
@@ -61,7 +61,7 @@ Return
 Ctrl & 4::
 	clickBuy()
 	; Delay between clicks can possibly be lowered to 226-229, 225 is too fast.
-	Sleep, 230
+	Sleep, 250
 	clickConfirm()
 	resetShareCounter()
 Return
@@ -69,26 +69,18 @@ Return
 ; Places a buy order at bid.
 Ctrl & 5::
 	clickBid()
-	Sleep, 230
-	clickBuy()
-	Sleep, 230
-	clickConfirm()
 Return
 
 ; Places a sell order at market.
 Ctrl & 1::
 	clickSell()
-	Sleep, 230
+	Sleep, 250
 	clickConfirm()
 Return
 
 ; Places a sell order at ask.
 Ctrl & 2::
 	clickAsk()
-	Sleep, 230
-	clickSell()
-	Sleep, 230
-	clickConfirm()
 Return
 
 ; Clears the quantity field.
@@ -97,6 +89,18 @@ Esc::
 	Sleep, 25
 	clearQuantity()
 	resetShareCounter()
+Return
+
+; Sets quantity to 500
+Ctrl & 8::
+	clickQuantity()
+	Send 500
+Return
+
+; Sets quantity to 1000
+Ctrl & 9::
+	clickQuantity()
+	Send 1000
 Return
 
 resetShareCounter() {
