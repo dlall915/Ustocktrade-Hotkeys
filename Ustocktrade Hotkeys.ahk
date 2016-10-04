@@ -5,130 +5,135 @@ SetWorkingDir %A_ScriptDir%  ; Ensures a consistent starting directory.
 
 
 ; A few AutoHotkey functions to make up for the lack of hotkeys in Ustocktrade. So far there is:
-; Increment, decrement, and clear order size (default 100).
+; Increment, decrement, and clear order size.
 ; Buy @ market, buy @ bid.
 ; Sell @ market, sell @ ask.
 
-; Default Coords and window name works on a primary 1440p monitor in a Chrome window that is snapped to the left.
+; Default coords and window name works on a primary 1440p monitor in a Chrome window that is snapped to the left.
 ; Only works with the most recently added stock, or the one on the leftmost of the window.
 ; Hotkeys can be changed as desired, list is here https://autohotkey.com/docs/KeyList.htm
 
 ; Enter window name and coordinates here.
-windowName:= "Ustocktrade - Google Chrome"
-xCoordQuantity:= "x160"
-yCoordQuantity:= "y350"
-xCoordBuyButton:= "x55"
-yCoordBuyButton:= "y380"
-xCoordBid:= "x45"
-yCoordBid:= "y265"
-xCoordSellButton:= "x250"
-yCoordSellButton:= "y380"
-xCoordSAsk:= "x390"
-yCoordSAsk:= "y265"
-xCoordConfirmButton:= "x675"
-yCoordConfirmButton:= "y465"
-
+global windowName:= "Ustocktrade - Google Chrome"
+global xCoordQuantity:= "x160"
+global yCoordQuantity:= "y350"
+global xCoordBuyButton:= "x55"
+global yCoordBuyButton:= "y380"
+global xCoordBid:= "x45"
+global yCoordBid:= "y265"
+global xCoordSellButton:= "x250"
+global yCoordSellButton:= "y380"
+global xCoordSAsk:= "x390"
+global yCoordSAsk:= "y265"
+global xCoordConfirmButton:= "x675"
+global yCoordConfirmButton:= "y465"
+global numDigitsToClear:= 5 ; Will clear up to a 99999 share order, didn't see any point in going higher.
+global shareCounter:= 0 ; Don't touch!
 increment:= 50 ; Change the increment value here.
 decrement:= 50 ; Change the decrement value here.
-numShares:= 0 ; Don't touch!
-numDigitsToClear:= 5 ; Will clear up to a 99999 share order, didn't see any point in going higher.
 
 ; Increments number of shares by the amount defined for "increment".
 Ctrl & 6::
-	; Clicks the quantity field.
-	ControlClick, %xCoordQuantity% %yCoordQuantity%, %windowName%
+	clickQuantity()
 	Sleep, 25
 	; Clears quantity field, increments number of shares and enters it.
-	numShares+= %increment%
-	Loop, %numDigitsToClear%
-	{
-		Send {Delete}
-	}
-	Send "%numShares%"
+	shareCounter+= %increment%
+	clearQuantity()
+	Send "%shareCounter%"
 Return
 
 ; Decrements number of shares by the amount defined for "decrement".
 Ctrl & 3::
-	; Clicks the quantity field.
-	ControlClick, %xCoordQuantity% %yCoordQuantity%, %windowName%
+	clickQuantity()
 	Sleep, 25
 	; Clears quantity field, increments number of shares and enters it.
-	if (numShares = %decrement%) {
+	if (shareCounter = %decrement%) {
 		Return
 	}
-	if (numShares > 0) {
-		numShares-= %decrement%
+	if (shareCounter > 0) {
+		shareCounter-= %decrement%
 	}
-	Loop, %numDigitsToClear%
-	{
-		Send {Delete}
-	}
-	Send "%numShares%"
+	clearQuantity()
+	Send "%shareCounter%"
 Return
 
 ; Places a buy order at market.
 Ctrl & 4::
-	; Clicks the buy button.
-	ControlClick, %xCoordBuyButton% %yCoordBuyButton%, %windowName%
+	clickBuy()
 	; Delay between clicks can possibly be lowered to 226-229, 225 is too fast.
 	Sleep, 230
-	; Clicks the confirm button
-	ControlClick, %xCoordConfirmButton% %yCoordConfirmButton%, %windowName%
-	numShares= 0
+	clickConfirm()
+	resetShareCounter()
 Return
 
 ; Places a buy order at bid.
 Ctrl & 5::
-	; Clicks the bid, which enters that as the order price.
-	ControlClick, %xCoordBid% %yCoordBid%, %windowName%
-	; Delay between clicks can possibly be lowered to 226-229, 225 is too fast.
+	clickBid()
 	Sleep, 230
-	; Clicks the buy button.
-	ControlClick, %xCoordBuyButton% %yCoordBuyButton%, %windowName%
-	; Delay between clicks can possibly be lowered to 226-229, 225 is too fast.
+	clickBuy()
 	Sleep, 230
-	; Clicks the confirm button
-	ControlClick, %xCoordConfirmButton% %yCoordConfirmButton%, %windowName%
-	numShares= 0
+	clickConfirm()
 Return
 
 ; Places a sell order at market.
 Ctrl & 1::
-	; Clicks the sell button
-	ControlClick, %xCoordSellButton% %yCoordSellButtont%, %windowName%
-	; Delay between clicks can possibly be lowered to 226-229, 225 is too fast.
+	clickSell()
 	Sleep, 230
-	; Clicks the confirm button
-	ControlClick, %xCoordConfirmButton% %yCoordConfirmButton%, %windowName%
-	numShares= 0
+	clickConfirm()
 Return
 
 ; Places a sell order at ask.
 Ctrl & 2::
-	; Clicks the ask, which enters that as the ask price.
-	ControlClick, %xCoordAsk% %yCoordAsk%, %windowName%
-	; Delay between clicks can possibly be lowered to 226-229, 225 is too fast.
+	clickAsk()
 	Sleep, 230
-	; Clicks the sell button
-	ControlClick, %xCoordSellButton% %yCoordSellButtont%, %windowName%
-	; Delay between clicks can possibly be lowered to 226-229, 225 is too fast.
+	clickSell()
 	Sleep, 230
-	; Clicks the confirm button
-	ControlClick, %xCoordConfirmButton% %yCoordConfirmButton%, %windowName%
-	numShares= 0
+	clickConfirm()
 Return
 
 ; Clears the quantity field.
 Esc::
-	; Clicks the quantity field.
-	ControlClick, %xCoordQuantity% %yCoordQuantity%, %windowName%
+	clickQuantity()
 	Sleep, 25
+	clearQuantity()
+	resetShareCounter()
+Return
+
+resetShareCounter() {
+	shareCounter= 0
+}
+
+clickBuy() {
+	ControlClick, %xCoordBuyButton% %yCoordBuyButton%, %windowName%
+}
+
+clickSell() {
+	ControlClick, %xCoordSellButton% %yCoordSellButtont%, %windowName%
+}
+
+clickBid() {
+	ControlClick, %xCoordBid% %yCoordBid%, %windowName%
+}
+
+clickAsk() {
+	ControlClick, %xCoordAsk% %yCoordAsk%, %windowName%
+}
+
+clickConfirm() {
+	ControlClick, %xCoordConfirmButton% %yCoordConfirmButton%, %windowName%
+	resetShareCounter()
+}
+
+clickQuantity() {
+	ControlClick, %xCoordQuantity% %yCoordQuantity%, %windowName%
+}
+
+clearQuantity() {
 	Loop, %numDigitsToClear%
 	{
 		Send {Delete}
 	}
-	numShares= 0
-Return
+}
 
 ; Hit ` to exit this program.
 `::ExitApp
