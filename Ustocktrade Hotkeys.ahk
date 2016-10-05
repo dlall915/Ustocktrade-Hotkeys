@@ -60,7 +60,7 @@ Return
 ; Places a buy order at market.
 Ctrl & 4::
 	clickBuy()
-	; Delay between clicks can possibly be lowered to 226-229, 225 is too fast.
+	; Delay between clicks can possibly be lowered, 225 is too fast.
 	Sleep, 250
 	clickConfirm()
 	resetShareCounter()
